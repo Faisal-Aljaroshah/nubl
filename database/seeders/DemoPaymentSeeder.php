@@ -7,12 +7,13 @@ use App\Models\FundTransaction;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DemoPaymentSeeder extends Seeder
 {
     public function run(): void
     {
-        if (Payment::where('idempotency_key', 'like', 'demo-%')->exists()) {
+        if (Payment::where('external_payment_id', 'like', 'DEMO-%')->exists()) {
             $this->command->info('⏭ Demo payments already seeded.');
 
             return;
@@ -54,7 +55,7 @@ class DemoPaymentSeeder extends Seeder
                 'status' => $row['status'],
                 'amount' => $amount,
                 'notes' => 'demo_seed',
-                'idempotency_key' => 'demo-'.uniqid(),
+                'idempotency_key' => Str::uuid()->toString(),
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
             ]);
