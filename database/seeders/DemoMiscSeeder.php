@@ -28,9 +28,24 @@ class DemoMiscSeeder extends Seeder
             return;
         }
 
-        $donors = User::where('membership_type', User::MEMBERSHIP_DONOR)->where('status', User::STATUS_ACTIVE)->get();
+        $donors = User::where('membership_type', User::MEMBERSHIP_DONOR)
+            ->where('status', User::STATUS_ACTIVE)
+            ->where('email', 'like', 'demo-donor-%')
+            ->get();
+        if ($donors->isEmpty()) {
+            $donors = User::where('membership_type', User::MEMBERSHIP_DONOR)->where('status', User::STATUS_ACTIVE)->get();
+        }
+
         $admins = User::whereHas('roles', fn ($q) => $q->where('name', 'admin'))->get();
-        $recipients = User::where('membership_type', User::MEMBERSHIP_RECIPIENT)->where('status', User::STATUS_ACTIVE)->limit(5)->get();
+
+        $recipients = User::where('membership_type', User::MEMBERSHIP_RECIPIENT)
+            ->where('status', User::STATUS_ACTIVE)
+            ->where('email', 'like', 'demo-recipient-%')
+            ->limit(5)
+            ->get();
+        if ($recipients->isEmpty()) {
+            $recipients = User::where('membership_type', User::MEMBERSHIP_RECIPIENT)->where('status', User::STATUS_ACTIVE)->limit(5)->get();
+        }
         $providers = User::where('membership_type', User::MEMBERSHIP_PROVIDER)->where('status', User::STATUS_ACTIVE)->limit(5)->get();
 
         $count = 0;

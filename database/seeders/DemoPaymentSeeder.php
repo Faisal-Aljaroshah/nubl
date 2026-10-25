@@ -13,19 +13,44 @@ class DemoPaymentSeeder extends Seeder
 {
     public function run(): void
     {
+        // Reattribute any bootstrap/fixture payments (e.g. from EwalletSeeder) to demo donors
+        // so normal fixture accounts like 'donor-seed@nubl.com' never appear on the public leaderboard.
+        $demoDonor = User::where('membership_type', User::MEMBERSHIP_DONOR)
+            ->where('status', User::STATUS_ACTIVE)
+            ->where('email', 'like', 'demo-donor-%')
+            ->first();
+
+        if ($demoDonor) {
+            $fixtureDonorIds = User::whereIn('email', ['donor-seed@nubl.com', 'donor@nubl.com'])->pluck('id');
+            if ($fixtureDonorIds->isNotEmpty()) {
+                Payment::whereIn('sponsor_id', $fixtureDonorIds)->update(['sponsor_id' => $demoDonor->id]);
+                FundTransaction::whereIn('sponsor_id', $fixtureDonorIds)->update(['sponsor_id' => $demoDonor->id]);
+            }
+        }
+
         if (Payment::where('external_payment_id', 'like', 'DEMO-%')->exists()) {
             $this->command->info('⏭ Demo payments already seeded.');
 
             return;
         }
 
+        // Only pick from demo donors so fixture/test accounts are never used in demo payments
         $donors = User::where('membership_type', User::MEMBERSHIP_DONOR)
             ->where('status', User::STATUS_ACTIVE)
+            ->where('email', 'like', 'demo-donor-%')
             ->pluck('id')
             ->toArray();
 
         if (empty($donors)) {
-            $this->command->warn('⚠ No active donors found. Skipping DemoPaymentSeeder.');
+            $donors = User::where('membership_type', User::MEMBERSHIP_DONOR)
+                ->where('status', User::STATUS_ACTIVE)
+                ->whereNotIn('email', ['donor-seed@nubl.com', 'donor@nubl.com'])
+                ->pluck('id')
+                ->toArray();
+        }
+
+        if (empty($donors)) {
+            $this->command->warn('⚠ No active demo donors found. Skipping DemoPaymentSeeder.');
 
             return;
         }
@@ -54,7 +79,7 @@ class DemoPaymentSeeder extends Seeder
                 'external_payment_id' => 'DEMO-'.strtoupper(substr(md5(uniqid()), 0, 10)),
                 'status' => $row['status'],
                 'amount' => $amount,
-                'notes' => 'demo_seed',
+                'notes' => null,
                 'idempotency_key' => Str::uuid()->toString(),
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,

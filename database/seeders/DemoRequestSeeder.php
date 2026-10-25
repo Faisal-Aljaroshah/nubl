@@ -23,8 +23,17 @@ class DemoRequestSeeder extends Seeder
 
         $recipients = User::where('membership_type', User::MEMBERSHIP_RECIPIENT)
             ->where('status', User::STATUS_ACTIVE)
+            ->where('email', 'like', 'demo-recipient-%')
             ->pluck('id')
             ->toArray();
+
+        if (empty($recipients)) {
+            $recipients = User::where('membership_type', User::MEMBERSHIP_RECIPIENT)
+                ->where('status', User::STATUS_ACTIVE)
+                ->where('email', '!=', 'recipient@nubl.com')
+                ->pluck('id')
+                ->toArray();
+        }
 
         $providers = User::where('membership_type', User::MEMBERSHIP_PROVIDER)
             ->where('status', User::STATUS_ACTIVE)
