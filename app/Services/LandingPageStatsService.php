@@ -78,23 +78,26 @@ class LandingPageStatsService
         ];
     }
 
-    // Hero stats
+    private const DELIVERED_SOURCES = [
+        FundTransaction::SOURCE_PAYOUT,
+        FundTransaction::SOURCE_REDEMPTION,
+    ];
 
     /**
-     * Total SAR delivered: sum of PAYOUT IN fund transactions.
+     * Total SAR delivered: sum of PAYOUT / REDEMPTION IN fund transactions.
      * Only counts money that physically changed hands at the provider (QR scanned),
      * not funds merely reserved/approved.
      */
     private function totalDelivered(): int
     {
-        return (int) FundTransaction::where('source', FundTransaction::SOURCE_PAYOUT)
+        return (int) FundTransaction::whereIn('source', self::DELIVERED_SOURCES)
             ->where('direction', FundTransaction::DIRECTION_IN)
             ->sum('amount');
     }
 
     /**
      * Unique recipient families who have had a QR physically scanned at the provider:
-     * count of distinct recipient_id values on requests linked to a PAYOUT IN
+     * count of distinct recipient_id values on requests linked to a PAYOUT / REDEMPTION IN
      * fund transaction (created at QR scan time, before proof upload).
      */
     private function familiesSupported(): int
@@ -102,7 +105,7 @@ class LandingPageStatsService
         return Request::whereIn('id', function ($q) {
             $q->select('request_id')
                 ->from('fund_transactions')
-                ->where('source', FundTransaction::SOURCE_PAYOUT)
+                ->whereIn('source', self::DELIVERED_SOURCES)
                 ->where('direction', FundTransaction::DIRECTION_IN)
                 ->whereNotNull('request_id');
         })->distinct('recipient_id')->count('recipient_id');
@@ -177,7 +180,7 @@ class LandingPageStatsService
             ->whereIn('id', function ($q) {
                 $q->select('request_id')
                     ->from('fund_transactions')
-                    ->where('source', FundTransaction::SOURCE_PAYOUT)
+                    ->whereIn('source', self::DELIVERED_SOURCES)
                     ->where('direction', FundTransaction::DIRECTION_IN)
                     ->whereNotNull('request_id');
             })
@@ -234,7 +237,7 @@ class LandingPageStatsService
     {
         $cutoff = now()->subHours(24);
 
-        $redeemedIds = FundTransaction::where('source', FundTransaction::SOURCE_PAYOUT)
+        $redeemedIds = FundTransaction::whereIn('source', self::DELIVERED_SOURCES)
             ->where('direction', FundTransaction::DIRECTION_IN)
             ->whereNotNull('request_id')
             ->where('created_at', '>=', $cutoff)
@@ -300,7 +303,7 @@ class LandingPageStatsService
             return null;
         }
 
-        $totalFulfilled = (float) FundTransaction::where('source', FundTransaction::SOURCE_PAYOUT)
+        $totalFulfilled = (float) FundTransaction::whereIn('source', self::DELIVERED_SOURCES)
             ->where('direction', FundTransaction::DIRECTION_IN)
             ->sum('amount');
         $deliveredPct = round(min($totalFulfilled / $totalDonated * 100, 100), 1);
