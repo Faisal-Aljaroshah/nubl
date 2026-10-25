@@ -13,6 +13,8 @@
 
         <title>{{ config('app.name', 'Laravel') }}@isset($title) - {{ $title }}@endisset</title>
 
+        @include('partials.favicons')
+
         <script>
             localStorage.getItem("_x_darkMode_on") === "true" && document.documentElement.classList.add("dark");
         </script>

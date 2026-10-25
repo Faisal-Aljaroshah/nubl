@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
 <meta charset="utf-8" />
@@ -7,6 +7,8 @@
 <meta name="description" content="NUBL connects donors, recipients, and local food providers through dignified, private food support." />
 <meta name="theme-color" content="#F5F4F1" />
 <title>{{ config('app.name', 'NUBL') }} — Food support with dignity</title>
+
+@include('partials.favicons')
 
 @vite(['resources/css/welcome-landing.css'])
 

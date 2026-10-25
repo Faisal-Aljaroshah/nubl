@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#F5F4F1" />
 <title>{{ __('top_donors.page_title') }} — {{ config('app.name', 'NUBL') }}</title>
 <link rel="canonical" href="{{ route('top-donors.index') }}" />
+@include('partials.favicons')
 
 @vite(['resources/css/welcome-landing.css'])
 
