@@ -69,6 +69,10 @@ class ProviderMenuItem extends Model
         $segments = array_values(array_filter(explode('/', $normalized), static fn ($s) => $s !== ''));
         $encoded = array_map(static fn (string $segment): string => rawurlencode($segment), $segments);
 
+        if (file_exists(public_path('images/'.$normalized))) {
+            return asset('images/'.implode('/', $encoded));
+        }
+
         return asset('storage/'.implode('/', $encoded));
     }
 
