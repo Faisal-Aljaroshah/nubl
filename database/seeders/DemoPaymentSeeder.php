@@ -12,7 +12,7 @@ class DemoPaymentSeeder extends Seeder
 {
     public function run(): void
     {
-        if (Payment::where('notes', 'demo_seed')->exists()) {
+        if (Payment::where('idempotency_key', 'like', 'demo-%')->exists()) {
             $this->command->info('⏭ Demo payments already seeded.');
 
             return;
