@@ -7,6 +7,18 @@
 <meta name="description" content="{{ __('top_donors.page_subtitle') }}" />
 <meta name="theme-color" content="#F5F4F1" />
 <title>{{ __('top_donors.page_title') }} — {{ config('app.name', 'NUBL') }}</title>
+<meta property="og:site_name" content="{{ config('app.name', 'NUBL') }}" />
+<script type="application/ld+json">
+@verbatim
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "NUBL",
+  "alternateName": "NUBL Platform",
+  "url": "https://nubl.faljaroshah.me"
+}
+@endverbatim
+</script>
 <link rel="canonical" href="{{ route('top-donors.index') }}" />
 @include('partials.favicons')
 

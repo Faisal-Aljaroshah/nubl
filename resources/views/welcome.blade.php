@@ -7,6 +7,18 @@
 <meta name="description" content="NUBL connects donors, recipients, and local food providers through dignified, private food support." />
 <meta name="theme-color" content="#F5F4F1" />
 <title>{{ config('app.name', 'NUBL') }} — Food support with dignity</title>
+<meta property="og:site_name" content="{{ config('app.name', 'NUBL') }}" />
+<script type="application/ld+json">
+@verbatim
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "NUBL",
+  "alternateName": "NUBL Platform",
+  "url": "https://nubl.faljaroshah.me"
+}
+@endverbatim
+</script>
 
 @include('partials.favicons')
 

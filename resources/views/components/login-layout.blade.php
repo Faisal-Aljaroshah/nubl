@@ -11,7 +11,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}@isset($title) - {{ $title }}@endisset</title>
+        {{-- Auth utility pages should not appear in search results; legal pages (variant="legal") should stay indexable --}}
+        @if(($variant ?? 'auth') !== 'legal')
+        <meta name="robots" content="noindex, nofollow">
+        @endif
+
+        <title>{{ config('app.name', 'NUBL') }}@isset($title) - {{ $title }}@endisset</title>
+        <meta property="og:site_name" content="{{ config('app.name', 'NUBL') }}" />
+        <script type="application/ld+json">
+        @verbatim
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "NUBL",
+          "alternateName": "NUBL Platform",
+          "url": "https://nubl.faljaroshah.me"
+        }
+        @endverbatim
+        </script>
 
         @include('partials.favicons')
 
