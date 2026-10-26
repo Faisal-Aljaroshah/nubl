@@ -50,7 +50,7 @@ class ResubmitApplicationController extends Controller
             abort(404);
         }
 
-        return Storage::disk('local')->response($path);
+        return Storage::disk(config('filesystems.private_disk'))->response($path);
     }
 
     public function update(UpdateResubmitApplicationRequest $request): RedirectResponse

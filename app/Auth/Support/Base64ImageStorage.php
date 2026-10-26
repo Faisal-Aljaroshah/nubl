@@ -26,7 +26,7 @@ class Base64ImageStorage
         $filename = uniqid($prefix, true).'.'.$extension;
         $path = $directory.'/'.$filename;
 
-        Storage::disk('local')->put($path, $decoded);
+        Storage::disk(config('filesystems.private_disk'))->put($path, $decoded);
 
         return $path;
     }

@@ -189,7 +189,7 @@ class UserService
     protected function createProfileByType(User $user, array $data, Request $request): void
     {
         if ($user->membership_type === User::MEMBERSHIP_RECIPIENT) {
-            $idPath = $request->file('id_photo')->store('recipient_id_photos', 'local');
+            $idPath = $request->file('id_photo')->store('recipient_id_photos', config('filesystems.private_disk'));
 
             RecipientProfile::create([
                 'user_id' => $user->id,
@@ -212,8 +212,8 @@ class UserService
         }
 
         if ($user->membership_type === User::MEMBERSHIP_PROVIDER) {
-            $licensePath = $request->file('business_license')->store('provider_documents', 'local');
-            $idPath = $request->file('id_or_iqama')->store('provider_documents', 'local');
+            $licensePath = $request->file('business_license')->store('provider_documents', config('filesystems.private_disk'));
+            $idPath = $request->file('id_or_iqama')->store('provider_documents', config('filesystems.private_disk'));
 
             $operatingHours = [];
             foreach (array_keys(config('provider.weekdays')) as $day) {
@@ -291,8 +291,8 @@ class UserService
                 'id_number' => $data['id_number'] ?? null,
             ];
             if ($request->hasFile('id_photo')) {
-                Storage::disk('local')->delete($profile->id_photo_path ?? '');
-                $profileData['id_photo_path'] = $request->file('id_photo')->store('recipient_id_photos', 'local');
+                Storage::disk(config('filesystems.private_disk'))->delete($profile->id_photo_path ?? '');
+                $profileData['id_photo_path'] = $request->file('id_photo')->store('recipient_id_photos', config('filesystems.private_disk'));
             }
             $profile->update($profileData);
 
@@ -353,12 +353,12 @@ class UserService
 
             if ($docs) {
                 if ($request->hasFile('business_license')) {
-                    Storage::disk('local')->delete($docs->business_license_path ?? '');
-                    $docs->update(['business_license_path' => $request->file('business_license')->store('provider_documents', 'local')]);
+                    Storage::disk(config('filesystems.private_disk'))->delete($docs->business_license_path ?? '');
+                    $docs->update(['business_license_path' => $request->file('business_license')->store('provider_documents', config('filesystems.private_disk'))]);
                 }
                 if ($request->hasFile('id_or_iqama')) {
-                    Storage::disk('local')->delete($docs->id_or_iqama_path ?? '');
-                    $docs->update(['id_or_iqama_path' => $request->file('id_or_iqama')->store('provider_documents', 'local')]);
+                    Storage::disk(config('filesystems.private_disk'))->delete($docs->id_or_iqama_path ?? '');
+                    $docs->update(['id_or_iqama_path' => $request->file('id_or_iqama')->store('provider_documents', config('filesystems.private_disk'))]);
                 }
             }
         }

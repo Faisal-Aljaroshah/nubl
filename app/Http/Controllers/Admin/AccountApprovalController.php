@@ -109,10 +109,10 @@ class AccountApprovalController extends Controller
     {
         $path = $this->approvalService->resolveFilePath($user, $type);
 
-        if (! $path || ! Storage::disk('local')->exists($path)) {
+        if (! $path || ! Storage::disk(config('filesystems.private_disk'))->exists($path)) {
             abort(404);
         }
 
-        return Storage::disk('local')->response($path);
+        return Storage::disk(config('filesystems.private_disk'))->response($path);
     }
 }

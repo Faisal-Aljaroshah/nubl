@@ -73,6 +73,6 @@ class RecipientRegistrar extends AbstractAccountRegistrar
 
     protected function cleanupArtifacts(array $artifacts): void
     {
-        Storage::disk('local')->delete($artifacts['id_photo']);
+        Storage::disk(config('filesystems.private_disk'))->delete($artifacts['id_photo']);
     }
 }

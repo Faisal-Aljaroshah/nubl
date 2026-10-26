@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Private Document Storage Disk
+    |--------------------------------------------------------------------------
+    |
+    | This is the disk used for all private user documents (ID photos, provider
+    | documents, payout receipts). Set PRIVATE_STORAGE_DISK=s3 in production
+    | (e.g., Heroku + Backblaze B2) and leave as 'local' for local development.
+    |
+    */
+
+    'private_disk' => env('PRIVATE_STORAGE_DISK', 'local'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

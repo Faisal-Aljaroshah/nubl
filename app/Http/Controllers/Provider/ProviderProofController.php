@@ -51,7 +51,7 @@ class ProviderProofController extends Controller
 
         if ($request->hasFile('proof_file')) {
             $file = $request->file('proof_file');
-            $path = $file->store("private/proofs/{$redemption->id}");
+            $path = $file->store("private/proofs/{$redemption->id}", config('filesystems.private_disk'));
         } elseif (! empty($request->input('proof_photo_base64'))) {
             $base64Data = $request->input('proof_photo_base64');
             if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $type)) {
@@ -69,7 +69,7 @@ class ProviderProofController extends Controller
 
                 $fileName = 'capture_'.time().'.'.$type;
                 $path = "private/proofs/{$redemption->id}/$fileName";
-                Storage::put($path, $data);
+                Storage::disk(config('filesystems.private_disk'))->put($path, $data);
             } else {
                 return back()->with('error', __('Invalid image data received.'));
             }
@@ -82,7 +82,7 @@ class ProviderProofController extends Controller
             if ($redemption->proof) {
                 DB::rollBack();
                 if ($path !== null) {
-                    Storage::delete($path);
+                    Storage::disk(config('filesystems.private_disk'))->delete($path);
                 }
 
                 return redirect()->route('provider.requests.index')->with('success', __('Proof already exists.'));
@@ -120,7 +120,7 @@ class ProviderProofController extends Controller
             return redirect()->route('provider.requests.index')->with('success', __('Request successfully fulfilled!'));
         } catch (\Exception $e) {
             DB::rollBack();
-            Storage::delete($path); // clean up file
+            Storage::disk(config('filesystems.private_disk'))->delete($path); // clean up file
 
             return back()->with('error', __('Failed to upload proof. Please try again.'));
         }

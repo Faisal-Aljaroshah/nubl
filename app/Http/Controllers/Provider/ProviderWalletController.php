@@ -41,10 +41,10 @@ class ProviderWalletController extends Controller
             abort(404);
         }
 
-        if (! Storage::disk('local')->exists($providerPayout->receipt_path)) {
+        if (! Storage::disk(config('filesystems.private_disk'))->exists($providerPayout->receipt_path)) {
             abort(404);
         }
 
-        return Storage::disk('local')->response($providerPayout->receipt_path);
+        return Storage::disk(config('filesystems.private_disk'))->response($providerPayout->receipt_path);
     }
 }

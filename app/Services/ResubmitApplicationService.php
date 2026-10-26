@@ -74,7 +74,7 @@ class ResubmitApplicationService
             }
         }
 
-        if (! $path || ! Storage::disk('local')->exists($path)) {
+        if (! $path || ! Storage::disk(config('filesystems.private_disk'))->exists($path)) {
             return null;
         }
 
@@ -120,7 +120,7 @@ class ResubmitApplicationService
                 ]);
 
                 if ($idPath && $previousIdPath) {
-                    Storage::disk('local')->delete($previousIdPath);
+                    Storage::disk(config('filesystems.private_disk'))->delete($previousIdPath);
                 }
 
                 $kyc->update([
@@ -134,7 +134,7 @@ class ResubmitApplicationService
             });
         } catch (\Throwable $e) {
             if ($idPath) {
-                Storage::disk('local')->delete($idPath);
+                Storage::disk(config('filesystems.private_disk'))->delete($idPath);
             }
             throw $e;
         }
@@ -174,10 +174,10 @@ class ResubmitApplicationService
         $licensePath = null;
         $idDocPath = null;
         if ($businessLicense !== null) {
-            $licensePath = $businessLicense->store('provider_documents', 'local');
+            $licensePath = $businessLicense->store('provider_documents', config('filesystems.private_disk'));
         }
         if ($idOrIqama !== null) {
-            $idDocPath = $idOrIqama->store('provider_documents', 'local');
+            $idDocPath = $idOrIqama->store('provider_documents', config('filesystems.private_disk'));
         }
 
         try {
@@ -222,11 +222,11 @@ class ResubmitApplicationService
 
                 $docUpdates = [];
                 if ($licensePath) {
-                    Storage::disk('local')->delete($docs->business_license_path ?? '');
+                    Storage::disk(config('filesystems.private_disk'))->delete($docs->business_license_path ?? '');
                     $docUpdates['business_license_path'] = $licensePath;
                 }
                 if ($idDocPath) {
-                    Storage::disk('local')->delete($docs->id_or_iqama_path ?? '');
+                    Storage::disk(config('filesystems.private_disk'))->delete($docs->id_or_iqama_path ?? '');
                     $docUpdates['id_or_iqama_path'] = $idDocPath;
                 }
                 if ($docUpdates !== []) {
@@ -235,10 +235,10 @@ class ResubmitApplicationService
             });
         } catch (\Throwable $e) {
             if ($licensePath) {
-                Storage::disk('local')->delete($licensePath);
+                Storage::disk(config('filesystems.private_disk'))->delete($licensePath);
             }
             if ($idDocPath) {
-                Storage::disk('local')->delete($idDocPath);
+                Storage::disk(config('filesystems.private_disk'))->delete($idDocPath);
             }
             throw $e;
         }

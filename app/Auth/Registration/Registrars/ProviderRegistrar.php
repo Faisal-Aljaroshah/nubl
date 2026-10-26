@@ -32,8 +32,8 @@ class ProviderRegistrar extends AbstractAccountRegistrar
     {
         /** @var ProviderRegistrationData $data */
         $artifacts = [
-            'license_path' => $data->businessLicense->store('provider_documents', 'local'),
-            'id_path' => $data->idOrIqama->store('provider_documents', 'local'),
+            'license_path' => $data->businessLicense->store('provider_documents', config('filesystems.private_disk')),
+            'id_path' => $data->idOrIqama->store('provider_documents', config('filesystems.private_disk')),
             'logo_path' => null,
             'logo_disk' => null,
         ];
@@ -92,8 +92,8 @@ class ProviderRegistrar extends AbstractAccountRegistrar
 
     protected function cleanupArtifacts(array $artifacts): void
     {
-        Storage::disk('local')->delete($artifacts['license_path']);
-        Storage::disk('local')->delete($artifacts['id_path']);
+        Storage::disk(config('filesystems.private_disk'))->delete($artifacts['license_path']);
+        Storage::disk(config('filesystems.private_disk'))->delete($artifacts['id_path']);
 
         if ($artifacts['logo_path'] !== null) {
             Storage::disk('public')->delete($artifacts['logo_path']);

@@ -73,7 +73,7 @@ class ProviderPayoutController extends Controller
             'receipt' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
-        $path = $validated['receipt']->store('provider-payout-receipts/'.$providerPayout->id, 'local');
+        $path = $validated['receipt']->store('provider-payout-receipts/'.$providerPayout->id, config('filesystems.private_disk'));
 
         $providerPayout->update(['receipt_path' => $path]);
 
@@ -89,11 +89,11 @@ class ProviderPayoutController extends Controller
     public function receiptFile(ProviderPayout $providerPayout): StreamedResponse|RedirectResponse
     {
         $path = $providerPayout->receipt_path;
-        if (! $path || ! Storage::disk('local')->exists($path)) {
+        if (! $path || ! Storage::disk(config('filesystems.private_disk'))->exists($path)) {
             abort(404);
         }
 
-        return Storage::disk('local')->response($path);
+        return Storage::disk(config('filesystems.private_disk'))->response($path);
     }
 
     public function confirm(Request $request, ProviderPayout $providerPayout): RedirectResponse
@@ -112,7 +112,7 @@ class ProviderPayoutController extends Controller
 
         $receiptPath = $providerPayout->receipt_path;
         if (! empty($validated['receipt'])) {
-            $receiptPath = $validated['receipt']->store('provider-payout-receipts/'.$providerPayout->id, 'local');
+            $receiptPath = $validated['receipt']->store('provider-payout-receipts/'.$providerPayout->id, config('filesystems.private_disk'));
             $providerPayout->update(['receipt_path' => $receiptPath]);
             $this->auditService->log('provider_payout', 'payout_receipt_uploaded', [
                 'provider_payout_id' => $providerPayout->id,
